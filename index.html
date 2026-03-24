@@ -1,0 +1,732 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gemini CLI Cheat Sheet</title>
+  <style>
+    :root {
+      --bg:           #0f1117;
+      --bg-card:      #161b22;
+      --bg-hover:     #1c2333;
+      --border:       #21262d;
+      --border-dim:   #30363d;
+      --text:         #e6edf3;
+      --text-muted:   #8b949e;
+      --text-dim:     #484f58;
+      --cyan:         #79c0ff;
+      --pink:         #ff7b72;
+      --yellow:       #e3b341;
+      --blue:         #58a6ff;
+      --purple:       #bc8cff;
+      --green:        #3fb950;
+      --orange:       #d29922;
+      --accent:       #1f6feb;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+      font-size: 13px;
+      line-height: 1.5;
+      min-height: 100vh;
+    }
+
+    /* ── Header ── */
+    .header {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: rgba(15, 17, 23, 0.96);
+      backdrop-filter: blur(12px);
+      border-bottom: 1px solid var(--border);
+      padding: 9px 18px;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .header-logo {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--text);
+      text-decoration: none;
+    }
+
+    .logo-gem {
+      width: 26px;
+      height: 26px;
+      border-radius: 7px;
+      background: linear-gradient(135deg, #4285f4 0%, #34a853 40%, #fbbc05 70%, #ea4335 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 15px;
+      flex-shrink: 0;
+    }
+
+    .badge {
+      font-size: 10px;
+      font-weight: 600;
+      padding: 2px 7px;
+      border-radius: 20px;
+      letter-spacing: 0.4px;
+    }
+    .badge-ver { background: var(--accent); color: #fff; }
+
+    .header-links {
+      display: flex;
+      gap: 14px;
+      margin-left: 2px;
+    }
+    .header-links a {
+      color: var(--text-muted);
+      text-decoration: none;
+      font-size: 12px;
+      transition: color .15s;
+    }
+    .header-links a:hover { color: var(--blue); }
+
+    .header-spacer { flex: 1; }
+
+    /* ── OS Toggle ── */
+    .os-toggle {
+      display: flex;
+      background: var(--bg-card);
+      border: 1px solid var(--border);
+      border-radius: 7px;
+      overflow: hidden;
+    }
+    .os-btn {
+      padding: 4px 11px;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--text-muted);
+      background: transparent;
+      border: none;
+      cursor: pointer;
+      transition: all .15s;
+    }
+    .os-btn:hover { color: var(--text); background: var(--bg-hover); }
+    .os-btn.active { color: #fff; background: var(--accent); }
+
+    /* ── Grid ── */
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(290px, 1fr));
+      border-left: 1px solid var(--border);
+      border-top: 1px solid var(--border);
+    }
+
+    /* ── Card ── */
+    .card {
+      border-right: 1px solid var(--border);
+      border-bottom: 1px solid var(--border);
+      padding: 15px;
+      display: flex;
+      flex-direction: column;
+      gap: 11px;
+    }
+
+    .card-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: 1.1px;
+      text-transform: uppercase;
+      color: var(--text-muted);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+    .card-title .icon { font-size: 13px; }
+
+    /* ── Subsection ── */
+    .sub { display: flex; flex-direction: column; gap: 3px; }
+
+    .sub-title {
+      font-size: 10px;
+      font-weight: 600;
+      color: var(--text-dim);
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 3px;
+    }
+
+    /* ── Row ── */
+    .row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 22px;
+    }
+
+    .desc {
+      color: var(--text-muted);
+      font-size: 12px;
+      flex: 1;
+      min-width: 0;
+    }
+
+    .keys {
+      display: flex;
+      align-items: center;
+      gap: 3px;
+      flex-shrink: 0;
+    }
+
+    /* ── KBD ── */
+    kbd {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-width: 22px;
+      height: 20px;
+      padding: 0 5px;
+      background: #0d1117;
+      border: 1px solid var(--border-dim);
+      border-bottom-width: 2px;
+      border-radius: 4px;
+      font-family: 'SF Mono', 'Fira Code', Consolas, 'Courier New', monospace;
+      font-size: 10px;
+      color: var(--text);
+      box-shadow: 0 1px 3px rgba(0,0,0,.4);
+      white-space: nowrap;
+    }
+
+    .plus {
+      color: var(--text-dim);
+      font-size: 10px;
+    }
+
+    /* ── Code tokens ── */
+    .cmd  { color: var(--cyan);   font-family: 'SF Mono','Fira Code',Consolas,monospace; font-size: 11.5px; }
+    .flag { color: var(--pink);   font-family: 'SF Mono','Fira Code',Consolas,monospace; font-size: 11.5px; }
+    .path { color: var(--yellow); font-family: 'SF Mono','Fira Code',Consolas,monospace; font-size: 11.5px; }
+    .sl   { color: var(--blue);   font-family: 'SF Mono','Fira Code',Consolas,monospace; font-size: 11.5px; }
+    .val  { color: var(--green);  font-family: 'SF Mono','Fira Code',Consolas,monospace; font-size: 11.5px; }
+    .muted-code { color: var(--text-muted); font-family: 'SF Mono','Fira Code',Consolas,monospace; font-size: 11.5px; }
+
+    /* ── Note / code block ── */
+    .note {
+      font-size: 11.5px;
+      background: rgba(13, 17, 23, 0.7);
+      border-left: 2px solid var(--border-dim);
+      padding: 5px 8px;
+      border-radius: 0 4px 4px 0;
+      color: var(--text-muted);
+      line-height: 1.6;
+    }
+    .note.warn { border-left-color: var(--orange); }
+    .note.info { border-left-color: var(--blue); }
+    .note.tip  { border-left-color: var(--green); }
+
+    /* ── Pill ── */
+    .pill {
+      display: inline-flex;
+      align-items: center;
+      font-size: 10px;
+      font-weight: 600;
+      padding: 1px 7px;
+      border-radius: 20px;
+      font-family: 'SF Mono','Fira Code',Consolas,monospace;
+      white-space: nowrap;
+    }
+    .pill-blue   { background: rgba(88,166,255,.13); color: var(--blue);   border: 1px solid rgba(88,166,255,.3); }
+    .pill-green  { background: rgba(63,185,80,.13);  color: var(--green);  border: 1px solid rgba(63,185,80,.3); }
+    .pill-orange { background: rgba(210,153,34,.13); color: var(--orange); border: 1px solid rgba(210,153,34,.3); }
+    .pill-red    { background: rgba(255,123,114,.13);color: var(--pink);   border: 1px solid rgba(255,123,114,.3); }
+    .pill-purple { background: rgba(188,140,255,.13);color: var(--purple); border: 1px solid rgba(188,140,255,.3); }
+    .pill-exp    { background: rgba(210,153,34,.1);  color: var(--orange); border: 1px solid rgba(210,153,34,.25); font-size: 9px; padding: 1px 5px; }
+    .pill-macos  { background: rgba(63,185,80,.1);   color: var(--green);  border: 1px solid rgba(63,185,80,.25);  font-size: 9px; padding: 1px 5px; font-family: -apple-system,sans-serif; }
+
+    /* ── Table ── */
+    .tbl { width: 100%; border-collapse: collapse; }
+    .tbl th {
+      color: var(--text-dim);
+      font-size: 10px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .5px;
+      padding: 2px 5px 4px;
+      border-bottom: 1px solid var(--border);
+      text-align: left;
+    }
+    .tbl td { padding: 3px 5px; font-size: 12px; }
+    .tbl tr + tr td { border-top: 1px solid rgba(33,38,45,.6); }
+
+    /* ── Divider ── */
+    .div { height: 1px; background: var(--border); margin: 2px 0; }
+
+    /* ── OS-specific visibility ── */
+    /* Default = macOS */
+    .row-win, .row-linux { display: none; }
+    .row-mac              { display: flex; }
+    .blk-win, .blk-linux { display: none; }
+    .blk-mac              { display: block; }
+
+    body.os-win .row-win   { display: flex; }
+    body.os-win .row-mac,
+    body.os-win .row-linux { display: none; }
+    body.os-win .blk-win   { display: block; }
+    body.os-win .blk-mac,
+    body.os-win .blk-linux { display: none; }
+
+    body.os-linux .row-linux { display: flex; }
+    body.os-linux .row-mac,
+    body.os-linux .row-win   { display: none; }
+    body.os-linux .blk-linux { display: block; }
+    body.os-linux .blk-mac,
+    body.os-linux .blk-win   { display: none; }
+
+    /* ── Footer ── */
+    .footer {
+      border-top: 1px solid var(--border);
+      padding: 14px 18px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      color: var(--text-dim);
+      font-size: 11px;
+      flex-wrap: wrap;
+    }
+    .footer a { color: var(--text-muted); text-decoration: none; }
+    .footer a:hover { color: var(--blue); }
+    .footer-sep { color: var(--text-dim); }
+  </style>
+</head>
+<body>
+
+<!-- ═══════════════════════ HEADER ═══════════════════════ -->
+<header class="header">
+  <a class="header-logo" href="https://github.com/google-gemini/gemini-cli" target="_blank">
+    <div class="logo-gem">✦</div>
+    Gemini CLI
+  </a>
+  <span class="badge badge-ver">v1.x</span>
+  <nav class="header-links">
+    <a href="https://github.com/google-gemini/gemini-cli" target="_blank">GitHub</a>
+    <a href="https://ai.google.dev/gemini-api/docs" target="_blank">API Docs</a>
+    <a href="https://aistudio.google.com/" target="_blank">AI Studio</a>
+    <a href="https://github.com/google-gemini/gemini-cli/blob/main/docs/cli/configuration.md" target="_blank">Config</a>
+  </nav>
+  <div class="header-spacer"></div>
+  <div class="os-toggle">
+    <button class="os-btn" data-os="mac">macOS</button>
+    <button class="os-btn" data-os="linux">Linux</button>
+    <button class="os-btn" data-os="win">Windows</button>
+  </div>
+</header>
+
+<!-- ═══════════════════════ GRID ═══════════════════════ -->
+<div class="grid">
+
+  <!-- ── Card 1 · Keyboard Shortcuts ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⌨️</span> Keyboard Shortcuts</div>
+
+    <div class="sub">
+      <div class="sub-title">Basic Controls</div>
+      <div class="row"><span class="desc">Submit prompt</span><div class="keys"><kbd>Enter</kbd></div></div>
+      <div class="row"><span class="desc">Cancel / close overlay</span><div class="keys"><kbd>Esc</kbd></div></div>
+      <div class="row"><span class="desc">Interrupt running task</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>C</kbd></div></div>
+      <div class="row"><span class="desc">Exit Gemini CLI</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>D</kbd></div></div>
+      <div class="row"><span class="desc">Clear screen</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>L</kbd></div></div>
+      <div class="row"><span class="desc">Suspend to background</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Z</kbd></div></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Input</div>
+      <div class="row"><span class="desc">Insert newline</span><div class="keys"><kbd>Shift</kbd><span class="plus">+</span><kbd>Enter</kbd></div></div>
+      <div class="row row-mac"><span class="desc">Insert newline (alt)</span><div class="keys"><kbd>⌥</kbd><span class="plus">+</span><kbd>Enter</kbd></div></div>
+      <div class="row row-linux row-win"><span class="desc">Insert newline (alt)</span><div class="keys"><kbd>Alt</kbd><span class="plus">+</span><kbd>Enter</kbd></div></div>
+      <div class="row"><span class="desc">Paste multi-line text</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>V</kbd></div></div>
+      <div class="row"><span class="desc">Open external editor (<span class="muted-code">$EDITOR</span>)</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>E</kbd></div></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">History</div>
+      <div class="row"><span class="desc">Search history</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>R</kbd></div></div>
+      <div class="row"><span class="desc">Previous entry</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>P</kbd> / <kbd>↑</kbd></div></div>
+      <div class="row"><span class="desc">Next entry</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>N</kbd> / <kbd>↓</kbd></div></div>
+      <div class="row"><span class="desc">Clear input</span><div class="keys"><kbd>Esc</kbd> <kbd>Esc</kbd></div></div>
+    </div>
+  </div>
+
+  <!-- ── Card 2 · App Controls ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🎛️</span> App Controls</div>
+
+    <div class="sub">
+      <div class="sub-title">Mode & UI Toggles</div>
+      <div class="row"><span class="desc">Cycle approval mode</span><div class="keys"><kbd>Shift</kbd><span class="plus">+</span><kbd>Tab</kbd></div></div>
+      <div class="row"><span class="desc">Toggle YOLO mode</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Y</kbd></div></div>
+      <div class="row"><span class="desc">Toggle todos panel</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>T</kbd></div></div>
+      <div class="row"><span class="desc">Toggle markdown rendering</span><div class="keys"><kbd>Alt</kbd><span class="plus">+</span><kbd>M</kbd></div></div>
+      <div class="row"><span class="desc">Expand/collapse output</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>O</kbd></div></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Background Shell</div>
+      <div class="row"><span class="desc">Open background shell</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>B</kbd></div></div>
+      <div class="row"><span class="desc">Kill background task</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>K</kbd></div></div>
+      <div class="row"><span class="desc">List background tasks</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>J</kbd></div></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Text Editing</div>
+      <div class="row"><span class="desc">Beginning of line</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>A</kbd></div></div>
+      <div class="row"><span class="desc">End of line</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>E</kbd></div></div>
+      <div class="row"><span class="desc">Kill to end of line</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>K</kbd></div></div>
+      <div class="row"><span class="desc">Kill to beginning of line</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>U</kbd></div></div>
+      <div class="row"><span class="desc">Kill previous word</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>W</kbd></div></div>
+      <div class="row row-mac"><span class="desc">Undo / Redo</span><div class="keys"><kbd>⌘</kbd><span class="plus">+</span><kbd>Z</kbd> / <kbd>⌘</kbd><span class="plus">+</span><kbd>Shift</kbd><span class="plus">+</span><kbd>Z</kbd></div></div>
+      <div class="row row-linux row-win"><span class="desc">Undo / Redo</span><div class="keys"><kbd>Ctrl</kbd><span class="plus">+</span><kbd>Z</kbd> / <kbd>Ctrl</kbd><span class="plus">+</span><kbd>Y</kbd></div></div>
+    </div>
+  </div>
+
+  <!-- ── Card 3 · Interactive Commands ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚡</span> Interactive Commands</div>
+
+    <div class="sub">
+      <div class="sub-title">Reload Commands</div>
+      <div class="row"><span class="desc"><span class="sl">/reload skills</span></span></div>
+      <div class="row"><span class="desc"><span class="sl">/reload agents</span></span></div>
+      <div class="row"><span class="desc"><span class="sl">/reload commands</span></span></div>
+      <div class="row"><span class="desc"><span class="sl">/reload memory</span></span></div>
+      <div class="row"><span class="desc"><span class="sl">/reload mcp</span></span></div>
+      <div class="row"><span class="desc"><span class="sl">/reload extensions</span></span></div>
+    </div>
+
+    <div class="div"></div>
+
+    <div class="sub">
+      <div class="sub-title">Session Commands</div>
+      <div class="row"><span class="desc">Show help &amp; all slash commands</span><div class="keys"><span class="sl">/help</span></div></div>
+      <div class="row"><span class="desc">Quit session</span><div class="keys"><span class="sl">/quit</span></div></div>
+      <div class="row"><span class="desc">Reload memory files</span><div class="keys"><span class="sl">/memory reload</span></div></div>
+      <div class="row"><span class="desc">List MCP servers &amp; tools</span><div class="keys"><span class="sl">/mcp</span></div></div>
+    </div>
+
+    <div class="div"></div>
+
+    <div class="sub">
+      <div class="sub-title">Prompt Prefixes</div>
+      <div class="row">
+        <span class="desc"><span class="sl">/</span> — invoke a slash command</span>
+      </div>
+      <div class="row">
+        <span class="desc"><span class="cmd">!</span> — run a shell command inline</span>
+      </div>
+      <div class="row">
+        <span class="desc"><span class="path">@</span> — reference a file (autocomplete)</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Card 4 · CLI Commands & Flags ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🖥️</span> CLI Commands &amp; Flags</div>
+
+    <div class="sub">
+      <div class="sub-title">Core</div>
+      <div class="row"><span class="desc"><span class="cmd">gemini</span> — start interactive REPL</span></div>
+      <div class="row"><span class="desc"><span class="flag">-p</span> <span class="val">"prompt"</span> — one-shot non-interactive</span></div>
+      <div class="row"><span class="desc"><span class="flag">-i</span> — stay interactive after <span class="flag">-p</span></span></div>
+      <div class="row"><span class="desc"><span class="flag">-r</span> — resume last session</span></div>
+      <div class="row"><span class="desc"><span class="cmd">gemini update</span> — update CLI to latest</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Pipe Input</div>
+      <div class="note info blk-mac"><span class="cmd">cat</span> <span class="path">file.txt</span> <span class="muted-code">|</span> <span class="cmd">gemini</span> <span class="flag">-p</span> <span class="val">"summarize"</span></div>
+      <div class="note info blk-linux"><span class="cmd">cat</span> <span class="path">file.txt</span> <span class="muted-code">|</span> <span class="cmd">gemini</span> <span class="flag">-p</span> <span class="val">"summarize"</span></div>
+      <div class="note info blk-win"><span class="cmd">Get-Content</span> <span class="path">file.txt</span> <span class="muted-code">|</span> <span class="cmd">gemini</span> <span class="flag">-p</span> <span class="val">"summarize"</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Key Flags</div>
+      <div class="row"><span class="desc"><span class="flag">-m</span> <span class="val">flash</span> — choose model/alias</span></div>
+      <div class="row"><span class="desc"><span class="flag">-o</span> <span class="val">out.txt</span> — write output to file</span></div>
+      <div class="row"><span class="desc"><span class="flag">--approval-mode</span> <span class="val">yolo</span></span></div>
+      <div class="row"><span class="desc"><span class="flag">-w</span> — git worktree mode <span class="pill pill-exp">experimental</span></span></div>
+      <div class="row"><span class="desc"><span class="flag">-s</span> <span class="val">name</span> — named session</span></div>
+      <div class="row"><span class="desc"><span class="flag">-d</span> — debug / verbose output</span></div>
+      <div class="row"><span class="desc"><span class="flag">--list-sessions</span> — show saved sessions</span></div>
+      <div class="row"><span class="desc"><span class="flag">--delete-session</span> <span class="val">id</span></span></div>
+      <div class="row"><span class="desc"><span class="flag">--include-directories</span> — include dirs in context</span></div>
+      <div class="row"><span class="desc"><span class="flag">-e</span> <span class="val">KEY=VAL</span> — env var override</span></div>
+      <div class="row"><span class="desc"><span class="flag">--allowed-mcp-server-names</span> <span class="val">a,b</span></span></div>
+    </div>
+  </div>
+
+  <!-- ── Card 5 · Model Selection ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🤖</span> Model Selection</div>
+
+    <div class="sub">
+      <div class="sub-title">Alias → Model ID</div>
+      <table class="tbl">
+        <tr><th>Alias</th><th>Resolves to</th></tr>
+        <tr>
+          <td><span class="val">auto</span></td>
+          <td><span class="path">gemini-2.5-pro</span> <span style="color:var(--text-dim);font-size:10px;">(auto-select)</span></td>
+        </tr>
+        <tr>
+          <td><span class="val">pro</span></td>
+          <td><span class="path">gemini-2.5-pro</span></td>
+        </tr>
+        <tr>
+          <td><span class="val">flash</span></td>
+          <td><span class="path">gemini-2.5-flash</span></td>
+        </tr>
+        <tr>
+          <td><span class="val">flash-lite</span></td>
+          <td><span class="path">gemini-2.0-flash-lite</span></td>
+        </tr>
+      </table>
+    </div>
+
+    <div class="div"></div>
+
+    <div class="sub">
+      <div class="sub-title">Approval Modes</div>
+      <div class="row"><span class="desc">Ask before every action</span><span class="pill pill-blue">default</span></div>
+      <div class="row"><span class="desc">Auto-approve file edits</span><span class="pill pill-green">auto_edit</span></div>
+      <div class="row"><span class="desc">Plan first, then execute</span><span class="pill pill-purple">plan</span></div>
+      <div class="row"><span class="desc">Auto-approve everything</span><span class="pill pill-red">yolo</span></div>
+    </div>
+
+    <div class="note tip">
+      <kbd>Shift</kbd><span class="plus">+</span><kbd>Tab</kbd> cycles approval mode in the REPL
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Examples</div>
+      <div class="note">
+        <span class="cmd">gemini</span> <span class="flag">-m</span> <span class="val">flash</span> <span class="flag">-p</span> <span class="val">"explain this"</span><br>
+        <span class="cmd">gemini</span> <span class="flag">--approval-mode</span> <span class="val">auto_edit</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Card 6 · Memory & Context ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">📁</span> Memory &amp; Context</div>
+
+    <div class="sub">
+      <div class="sub-title">GEMINI.md Locations</div>
+      <div class="row"><span class="desc">Project (workspace)</span><span class="path">./GEMINI.md</span></div>
+      <div class="row"><span class="desc">Global (user)</span><span class="path">~/.gemini/GEMINI.md</span></div>
+      <div class="note warn">Workspace GEMINI.md takes precedence over user-level</div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Config File Paths</div>
+      <div class="row"><span class="desc">User settings</span><span class="path">~/.gemini/settings.json</span></div>
+      <div class="row"><span class="desc">Project settings</span><span class="path">.gemini/settings.json</span></div>
+      <div class="row"><span class="desc">Keybindings</span><span class="path">~/.gemini/keybindings.json</span></div>
+      <div class="row"><span class="desc">Ignore patterns</span><span class="path">.geminiignore</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Context Controls</div>
+      <div class="row"><span class="desc">Reload memory in session</span><span class="sl">/memory reload</span></div>
+      <div class="row"><span class="desc">Reference file in prompt</span><span class="path">@filename</span></div>
+      <div class="row"><span class="desc">Auto-compression setting</span><span class="path">model.compressionThreshold</span></div>
+    </div>
+
+    <div class="note">
+      Autocomplete triggers on <span class="path">@</span> — fuzzy-matches files in workspace
+    </div>
+  </div>
+
+  <!-- ── Card 7 · MCP Servers ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🔌</span> MCP Servers</div>
+
+    <div class="sub">
+      <div class="sub-title">Add Server</div>
+      <div class="note">
+        <span class="cmd">gemini mcp add</span> <span class="val">name</span> <span class="val">cmd</span> <span class="val">[args]</span>
+      </div>
+      <div class="note">
+        <span class="cmd">gemini mcp add</span> <span class="flag">--transport http</span> <span class="val">name</span> <span class="val">url</span>
+      </div>
+      <div class="note">
+        <span class="cmd">gemini mcp add</span> <span class="flag">--env</span> <span class="val">KEY=VAL</span> <span class="val">name cmd</span>
+      </div>
+      <div class="note">
+        <span class="cmd">gemini mcp add</span> <span class="flag">--scope</span> <span class="val">user</span><span class="muted-code">|</span><span class="val">project</span> <span class="val">name cmd</span>
+      </div>
+      <div class="note">
+        <span class="cmd">gemini mcp add</span> <span class="flag">--include-tools</span> <span class="val">t1,t2</span> <span class="val">name cmd</span>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Manage</div>
+      <div class="note"><span class="cmd">gemini mcp remove</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini mcp list</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">In Session</div>
+      <div class="row"><span class="desc">Show connected servers + tools</span><span class="sl">/mcp</span></div>
+      <div class="row"><span class="desc">Reload MCP servers</span><span class="sl">/reload mcp</span></div>
+      <div class="row"><span class="desc">Limit servers at launch</span><span class="flag">--allowed-mcp-server-names</span></div>
+    </div>
+  </div>
+
+  <!-- ── Card 8 · Extensions ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🧩</span> Extensions</div>
+
+    <div class="sub">
+      <div class="sub-title">Install &amp; Remove</div>
+      <div class="note"><span class="cmd">gemini extensions install</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini extensions install</span> <span class="flag">--ref</span> <span class="val">branch</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini extensions install</span> <span class="flag">--auto-update</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini extensions uninstall</span> <span class="val">name</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Manage</div>
+      <div class="note"><span class="cmd">gemini extensions list</span></div>
+      <div class="note"><span class="cmd">gemini extensions update</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini extensions update</span> <span class="flag">--all</span></div>
+      <div class="note"><span class="cmd">gemini extensions enable</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini extensions disable</span> <span class="val">name</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Dev Commands</div>
+      <div class="note"><span class="cmd">gemini extensions link</span> <span class="path">./local-path</span></div>
+      <div class="note"><span class="cmd">gemini extensions new</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini extensions validate</span></div>
+    </div>
+
+    <div class="row"><span class="desc">Reload in session</span><span class="sl">/reload extensions</span></div>
+  </div>
+
+  <!-- ── Card 9 · Skills & Agents ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">🤹</span> Skills &amp; Agents</div>
+
+    <div class="sub">
+      <div class="sub-title">Skills CLI</div>
+      <div class="note"><span class="cmd">gemini skills list</span></div>
+      <div class="note"><span class="cmd">gemini skills install</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini skills link</span> <span class="path">./local-path</span></div>
+      <div class="note"><span class="cmd">gemini skills uninstall</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini skills enable</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini skills disable</span> <span class="val">name</span></div>
+      <div class="note"><span class="cmd">gemini skills enable</span> <span class="flag">--all</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">In Session</div>
+      <div class="row"><span class="desc">Reload skills</span><span class="sl">/reload skills</span></div>
+      <div class="row"><span class="desc">Reload agents</span><span class="sl">/reload agents</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Config Keys</div>
+      <div class="row"><span class="desc">Enable/disable all skills</span><span class="path">skills.enabled</span></div>
+      <div class="row"><span class="desc">Max turns per session</span><span class="path">model.maxSessionTurns</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Git Worktrees <span class="pill pill-exp">experimental</span></div>
+      <div class="note warn">
+        Requires <span class="flag">-w</span> flag + <span class="path">experimental.worktrees: true</span> in settings
+      </div>
+      <div class="note">
+        <span class="cmd">gemini</span> <span class="flag">-w</span> <span class="val">"refactor auth module"</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ── Card 10 · Key Settings ── -->
+  <div class="card">
+    <div class="card-title"><span class="icon">⚙️</span> Key Settings</div>
+
+    <div class="sub">
+      <div class="sub-title">General</div>
+      <div class="row"><span class="desc">Vim keybindings in input</span><span class="path">vimMode</span></div>
+      <div class="row"><span class="desc">Default approval mode</span><span class="path">defaultApprovalMode</span></div>
+      <div class="row"><span class="desc">Auto-update on start</span><span class="path">enableAutoUpdate</span></div>
+      <div class="row">
+        <span class="desc">System notifications <span class="pill pill-macos">macOS only</span></span>
+        <span class="path">enableNotifications</span>
+      </div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Model</div>
+      <div class="row"><span class="desc">Model name or alias</span><span class="path">model.name</span></div>
+      <div class="row"><span class="desc">Context compression threshold</span><span class="path">model.compressionThreshold</span></div>
+      <div class="row"><span class="desc">Max turns per session</span><span class="path">model.maxSessionTurns</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Security</div>
+      <div class="row"><span class="desc">Disable YOLO mode</span><span class="path">disableYoloMode</span></div>
+      <div class="row"><span class="desc">Disable always-allow actions</span><span class="path">disableAlwaysAllow</span></div>
+      <div class="row"><span class="desc">Sandbox tool execution</span><span class="path">sandbox</span></div>
+    </div>
+
+    <div class="sub">
+      <div class="sub-title">Example ~/.gemini/settings.json</div>
+      <div class="note">
+        <span class="muted-code">{</span><br>
+        &nbsp;&nbsp;<span class="path">"model"</span><span class="muted-code">:</span> <span class="val">"flash"</span><span class="muted-code">,</span><br>
+        &nbsp;&nbsp;<span class="path">"defaultApprovalMode"</span><span class="muted-code">:</span> <span class="val">"auto_edit"</span><span class="muted-code">,</span><br>
+        &nbsp;&nbsp;<span class="path">"vimMode"</span><span class="muted-code">:</span> <span class="val">true</span><span class="muted-code">,</span><br>
+        &nbsp;&nbsp;<span class="path">"enableAutoUpdate"</span><span class="muted-code">:</span> <span class="val">true</span><br>
+        <span class="muted-code">}</span>
+      </div>
+    </div>
+  </div>
+
+</div><!-- /grid -->
+
+<!-- ═══════════════════════ FOOTER ═══════════════════════ -->
+<footer class="footer">
+  <span>Gemini CLI Cheat Sheet</span>
+  <span class="footer-sep">·</span>
+  <a href="https://github.com/google-gemini/gemini-cli" target="_blank">google-gemini/gemini-cli</a>
+  <span class="footer-sep">·</span>
+  <a href="https://ai.google.dev/gemini-api/docs" target="_blank">Gemini API Docs</a>
+  <span class="footer-sep">·</span>
+  <a href="https://aistudio.google.com/" target="_blank">AI Studio</a>
+  <span class="footer-sep">·</span>
+  <span>Inspired by <a href="https://cc.storyfox.cz" target="_blank">cc.storyfox.cz</a></span>
+</footer>
+
+<script>
+  // ── OS toggle ──
+  const btns = document.querySelectorAll('.os-btn');
+
+  function setOs(os) {
+    btns.forEach(b => b.classList.toggle('active', b.dataset.os === os));
+    document.body.className = 'os-' + os;
+  }
+
+  btns.forEach(btn => btn.addEventListener('click', () => setOs(btn.dataset.os)));
+
+  // Auto-detect OS
+  const ua = navigator.userAgent;
+  if      (ua.includes('Win'))                          setOs('win');
+  else if (ua.includes('Linux') && !ua.includes('Mac')) setOs('linux');
+  else                                                  setOs('mac');
+</script>
+</body>
+</html>
